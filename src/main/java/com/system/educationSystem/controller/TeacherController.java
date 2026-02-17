@@ -3,8 +3,6 @@ package com.system.educationSystem.controller;
 
 import com.system.educationSystem.dto.TeacherDto;
 import com.system.educationSystem.dto.TeacherResponseDto;
-import com.system.educationSystem.model.TeacherEntity;
-import com.system.educationSystem.repository.TeacherRepository;
 import com.system.educationSystem.service.TeacherService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;

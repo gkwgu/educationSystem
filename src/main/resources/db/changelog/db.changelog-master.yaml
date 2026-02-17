@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - include:
+     file: db/changelog/001-create-teachers.yaml
+  - include:
+     file: db/changelog/002-create-groups.yaml
+  - include:
+     file: db/changelog/003-create-course.yaml
+  - include:
+     file: db/changelog/004-create-students.yaml
+  - include:
+     file: db/changelog/005-create-schedule.yaml

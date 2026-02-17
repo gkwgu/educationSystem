@@ -3,6 +3,8 @@ package com.system.educationSystem.service;
 
 import com.system.educationSystem.dto.GroupDto;
 import com.system.educationSystem.dto.GroupResponseDto;
+import com.system.educationSystem.exception.GroupNotDeleteException;
+import com.system.educationSystem.exception.GroupNotFoundException;
 import com.system.educationSystem.mapper.GroupMapper;
 import com.system.educationSystem.model.GroupEntity;
 import com.system.educationSystem.repository.GroupRepositoty;
@@ -22,16 +24,16 @@ public class GroupService {
 
     public GroupResponseDto update(Long id, GroupDto dto){
         GroupEntity updateGroup =groupRepository.findById(id).
-                orElseThrow(()->new RuntimeException("Группа не найдена"));
-        updateGroup.setName(dto.getName());
+                orElseThrow(()->new GroupNotFoundException(id));
+        updateGroup.setName(dto.name());
         return groupMapper.toDto(groupRepository.save(updateGroup));
     }
 
     public void delete(Long id){
         GroupEntity group =groupRepository.findById(id).
-                orElseThrow(()->new RuntimeException("Группа не найдена"));
+                orElseThrow(()->new GroupNotFoundException(id));
         if(!group.getStudents().isEmpty()){
-            throw new RuntimeException("Группу нельзя удалить, в ней есть студенты");
+            throw new GroupNotDeleteException();
         }
         groupRepository.delete(group);
     }

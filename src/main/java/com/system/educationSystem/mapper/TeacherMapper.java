@@ -3,24 +3,13 @@ package com.system.educationSystem.mapper;
 import com.system.educationSystem.dto.TeacherDto;
 import com.system.educationSystem.dto.TeacherResponseDto;
 import com.system.educationSystem.model.TeacherEntity;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
 
 
-@Component
-public class TeacherMapper {
+@Mapper(componentModel = "spring")
+public interface TeacherMapper {
 
-    public TeacherEntity toEntity(TeacherDto dto){
-        TeacherEntity teacher=new TeacherEntity();
-        teacher.setFirstName(dto.getFirstName());
-        teacher.setLastName(dto.getLastName());
-        return teacher;
-    }
+    public TeacherEntity toEntity(TeacherDto dto);
 
-    public TeacherResponseDto toDto(TeacherEntity teacher){
-        return new TeacherResponseDto(
-                teacher.getId(),
-                teacher.getFirstName(),
-                teacher.getLastName()
-        );
-    }
+    public TeacherResponseDto toDto(TeacherEntity teacher);
 }

@@ -1,13 +1,3 @@
 package com.system.educationSystem.dto;
 
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-@RequiredArgsConstructor
-@Getter
-public class StudentDto {
-    private final String lastName;
-    private final String firstName;
-    private final Long groupId;
-}
+public record StudentDto(String lastName, String firstName, Long groupId) {}

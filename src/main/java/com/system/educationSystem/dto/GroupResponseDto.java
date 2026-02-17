@@ -1,9 +1,3 @@
 package com.system.educationSystem.dto;
 
-import lombok.RequiredArgsConstructor;
-
-@RequiredArgsConstructor
-public class GroupResponseDto {
-    private final Long id;
-    private final String name;
-}
+public record GroupResponseDto(Long id, String name) { }

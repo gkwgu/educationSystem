@@ -2,18 +2,11 @@ package com.system.educationSystem.mapper;
 
 import com.system.educationSystem.dto.StudentResponseDto;
 import com.system.educationSystem.model.StudentEntity;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
 
 
-@Component
-public class StudentMapper {
-    public StudentResponseDto toDto(StudentEntity student){
-        return new StudentResponseDto(
-                student.getId(),
-                student.getLastName(),
-                student.getFirstName(),
-                student.getGroup().getId(),
-                student.getGroup().getName()
-        );
-    }
+
+@Mapper(componentModel = "spring")
+public interface StudentMapper {
+    public StudentResponseDto toDto(StudentEntity student);
 }

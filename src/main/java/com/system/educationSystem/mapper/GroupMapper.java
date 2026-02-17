@@ -3,21 +3,12 @@ package com.system.educationSystem.mapper;
 import com.system.educationSystem.dto.GroupDto;
 import com.system.educationSystem.dto.GroupResponseDto;
 import com.system.educationSystem.model.GroupEntity;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
 
 
-@Component
-public class GroupMapper {
-    public GroupEntity toEntity(GroupDto dto){
-        GroupEntity group=new GroupEntity();
-        group.setName(dto.getName());
-        return group;
-    }
+@Mapper(componentModel = "spring")
+public interface GroupMapper {
+    public GroupEntity toEntity(GroupDto dto);
 
-    public GroupResponseDto toDto(GroupEntity group){
-        return new GroupResponseDto(
-                group.getId(),
-                group.getName()
-        );
-    }
+    public GroupResponseDto toDto(GroupEntity group);
 }

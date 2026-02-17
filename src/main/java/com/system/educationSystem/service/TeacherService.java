@@ -2,6 +2,7 @@ package com.system.educationSystem.service;
 
 import com.system.educationSystem.dto.TeacherDto;
 import com.system.educationSystem.dto.TeacherResponseDto;
+import com.system.educationSystem.exception.TeacherNotFoundException;
 import com.system.educationSystem.mapper.TeacherMapper;
 import com.system.educationSystem.model.TeacherEntity;
 import com.system.educationSystem.repository.TeacherRepository;
@@ -21,15 +22,15 @@ public class TeacherService {
 
     public TeacherResponseDto update(Long id,TeacherDto dto){
         TeacherEntity updateTeacher =teacherRepository.findById(id).
-                orElseThrow(()->new RuntimeException("Преподаватель не найден"));
-        updateTeacher.setFirstName(dto.getFirstName());
-        updateTeacher.setLastName(dto.getLastName());
+                orElseThrow(()->new TeacherNotFoundException(id));
+        updateTeacher.setFirstName(dto.firstName());
+        updateTeacher.setLastName(dto.lastName());
         return teacherMapper.toDto(teacherRepository.save(updateTeacher));
     }
 
     public void delete(Long id){
         TeacherEntity teacher =teacherRepository.findById(id).
-                orElseThrow(()->new RuntimeException("Преподаватель не найден"));
+                orElseThrow(()->new TeacherNotFoundException(id));
         teacherRepository.delete(teacher);
     }
 }

@@ -3,6 +3,8 @@ package com.system.educationSystem.service;
 
 import com.system.educationSystem.dto.StudentDto;
 import com.system.educationSystem.dto.StudentResponseDto;
+import com.system.educationSystem.exception.GroupNotFoundException;
+import com.system.educationSystem.exception.StudentNotFoundException;
 import com.system.educationSystem.mapper.StudentMapper;
 import com.system.educationSystem.model.GroupEntity;
 import com.system.educationSystem.model.StudentEntity;
@@ -19,29 +21,29 @@ public class StudentService {
     private final StudentMapper studentMapper;
 
     public StudentResponseDto save(StudentDto dto){
-        GroupEntity group=groupRepositoty.findById(dto.getGroupId()).
+        GroupEntity group=groupRepositoty.findById(dto.groupId()).
                 orElseThrow(()-> new RuntimeException("Такой группы нет"));
         StudentEntity student=new StudentEntity();
-        student.setFirstName(dto.getFirstName());
-        student.setLastName(dto.getLastName());
+        student.setFirstName(dto.firstName());
+        student.setLastName(dto.lastName());
         student.setGroup(group);
         return studentMapper.toDto(studentRepository.save(student));
     }
 
     public StudentResponseDto update(Long id, StudentDto dto){
         StudentEntity updateStudent=studentRepository.findById(id).
-                orElseThrow(()-> new RuntimeException("Студент не найден"));
-        GroupEntity group=groupRepositoty.findById(dto.getGroupId()).
-                orElseThrow(()-> new RuntimeException("Такой группы нет"));
-        updateStudent.setFirstName(dto.getFirstName());
-        updateStudent.setLastName(dto.getLastName());
+                orElseThrow(()-> new StudentNotFoundException(id));
+        GroupEntity group=groupRepositoty.findById(dto.groupId()).
+                orElseThrow(()-> new GroupNotFoundException(dto.groupId()));
+        updateStudent.setFirstName(dto.firstName());
+        updateStudent.setLastName(dto.lastName());
         updateStudent.setGroup(group);
         return studentMapper.toDto(studentRepository.save(updateStudent));
     }
 
     public void delete(Long id){
         StudentEntity student=studentRepository.findById(id).
-                orElseThrow(()-> new RuntimeException("Студент не найден"));
+                orElseThrow(()-> new StudentNotFoundException(id));
         studentRepository.delete(student);
     }
 }

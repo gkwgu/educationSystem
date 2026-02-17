@@ -4,6 +4,9 @@ package com.system.educationSystem.service;
 import com.system.educationSystem.dto.ScheduleDto;
 import com.system.educationSystem.dto.ScheduleUpdateDto;
 import com.system.educationSystem.dto.ScheduleViewDto;
+import com.system.educationSystem.exception.CourseNotFoundException;
+import com.system.educationSystem.exception.GroupNotFoundException;
+import com.system.educationSystem.exception.ScheduleNotFoundException;
 import com.system.educationSystem.model.CourseEntity;
 import com.system.educationSystem.model.GroupEntity;
 import com.system.educationSystem.model.ScheduleEntity;
@@ -23,14 +26,14 @@ public class ScheduleService {
     private final GroupRepositoty groupRepository;
 
     public void addGroupToCourse(ScheduleDto dto){
-        CourseEntity course=courseRepository.findById(dto.getCourseId()).
-                orElseThrow(()->new RuntimeException("Курс не найден"));
-        GroupEntity group =groupRepository.findById(dto.getGroupId()).
-                orElseThrow(()->new RuntimeException("Группа не найдена"));
+        CourseEntity course=courseRepository.findById(dto.courseId()).
+                orElseThrow(()->new CourseNotFoundException(dto.courseId()));
+        GroupEntity group =groupRepository.findById(dto.groupId()).
+                orElseThrow(()->new GroupNotFoundException(dto.groupId()));
         ScheduleEntity schedule=new ScheduleEntity();
         schedule.setGroup(group);
         schedule.setCourse(course);
-        schedule.setLessonTime(dto.getLessonTime());
+        schedule.setLessonTime(dto.lessonTime());
         schedule.setTeacher(course.getTeacher());
 
         scheduleRepository.save(schedule);
@@ -38,16 +41,16 @@ public class ScheduleService {
 
     public void delete(Long scheduleId) {
         ScheduleEntity schedule = scheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new RuntimeException("Такого расписания нет"));
+                .orElseThrow(() -> new ScheduleNotFoundException(scheduleId));
         scheduleRepository.delete(schedule);
     }
 
     public void updateTime(Long scheduleId, ScheduleUpdateDto dto) {
 
         ScheduleEntity schedule = scheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new RuntimeException("Такого расписания нет"));
+                .orElseThrow(() -> new ScheduleNotFoundException(scheduleId));
 
-        schedule.setLessonTime(dto.getLessonTime());
+        schedule.setLessonTime(dto.lessonTime());
         scheduleRepository.save(schedule);
     }
 
