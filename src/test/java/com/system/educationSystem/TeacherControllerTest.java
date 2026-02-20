@@ -1,46 +1,25 @@
 package com.system.educationSystem;
 
 import com.system.educationSystem.dto.CreateTeacherRequest;
+import com.system.educationSystem.dto.TeacherDtoUpdate;
 import com.system.educationSystem.dto.TeacherResponse;
+import com.system.educationSystem.dto.TeacherResponseDto;
+import com.system.educationSystem.model.TeacherEntity;
+import com.system.educationSystem.repository.TeacherRepository;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Testcontainers
-public class TeacherControllerTest {
-
-    @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:17")
-            .withDatabaseName("test_db")
-            .withUsername("test")
-            .withPassword("test");
-
-    @DynamicPropertySource
-    static void overrideProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
-        registry.add("spring.datasource.driver-class-name", postgres::getDriverClassName);
-
-        registry.add("spring.jpa.hibernate.ddl-auto", () -> "none");
-        registry.add("spring.liquibase.enabled", () -> "true");
-        registry.add("spring.jpa.properties.hibernate.id.new_generator_mappings", () -> "false");
-        registry.add("spring.jpa.hibernate.use-new-id-generator-mappings", () -> "false");
-    }
-
+public class TeacherControllerTest extends AbstractIT{
     @Autowired
-    private TestRestTemplate restTemplate;
+    private TeacherRepository teacherRepository;
 
     @Test
     void createTeacher_success() {
@@ -59,5 +38,56 @@ public class TeacherControllerTest {
         assertThat(response.getBody().getFirstName()).isEqualTo("Иван");
         assertThat(response.getBody().getLastName()).isEqualTo("Иванов");
         assertThat(response.getBody().getId()).isNotNull();
+    }
+
+    @AfterEach
+    void teacherDelete(){
+        teacherRepository.deleteAll();
+    }
+
+    private TeacherEntity newTeacher;
+    @BeforeEach
+    void createTeacher(){
+        TeacherEntity teacher = new TeacherEntity();
+        teacher.setFirstName("Николай");
+        teacher.setLastName("Сидоров");
+
+        newTeacher = teacherRepository.save(teacher);
+    }
+
+    @Test
+    void updateTeacher_success() {
+        TeacherDtoUpdate request = new TeacherDtoUpdate();
+        request.setFirstName("Updated");
+        request.setLastName("Teacher");
+
+        HttpEntity<TeacherDtoUpdate> entity = new HttpEntity<>(request);
+
+        ResponseEntity<TeacherResponse> response =
+                restTemplate.exchange(
+                        "/api/teacher/" + newTeacher.getId(),
+                        HttpMethod.PUT,
+                        entity,
+                        TeacherResponse.class
+                );
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getFirstName()).isEqualTo("Updated");
+        assertThat(response.getBody().getLastName()).isEqualTo("Teacher");
+    }
+
+    @Test
+    void deleteTeacher_success() {
+        ResponseEntity<Void> response =
+                restTemplate.exchange(
+                        "/api/teacher/" + newTeacher.getId(),
+                        HttpMethod.DELETE,
+                        null,
+                        Void.class
+                );
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(teacherRepository.findById(newTeacher.getId())).isEmpty();
     }
 }
